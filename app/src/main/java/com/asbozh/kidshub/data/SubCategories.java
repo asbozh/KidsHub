@@ -1,10 +1,13 @@
 package com.asbozh.kidshub.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Nasko on 9/11/17.
  */
 
-public class SubCategories {
+public class SubCategories implements Parcelable {
 
     private int categoryId;
     private int subCategoryId;
@@ -49,4 +52,37 @@ public class SubCategories {
     public void setCoverURL(String coverURL) {
         this.coverURL = coverURL;
     }
+
+    protected SubCategories(Parcel in) {
+        categoryId = in.readInt();
+        subCategoryId = in.readInt();
+        subCategoryName = in.readString();
+        coverURL = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(categoryId);
+        dest.writeInt(subCategoryId);
+        dest.writeString(subCategoryName);
+        dest.writeString(coverURL);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<SubCategories> CREATOR = new Parcelable.Creator<SubCategories>() {
+        @Override
+        public SubCategories createFromParcel(Parcel in) {
+            return new SubCategories(in);
+        }
+
+        @Override
+        public SubCategories[] newArray(int size) {
+            return new SubCategories[size];
+        }
+    };
 }
