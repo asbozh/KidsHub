@@ -2,6 +2,7 @@ package com.asbozh.kidshub;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(CategoryAdapter.CategoryAdapterViewHolder holder, int position) {
         String categoryName = mCategoryList.get(position).getCategoryName();
-        if (categoryName != null) {
+        if (!TextUtils.isEmpty(categoryName)) {
             holder.categoryTextView.setText(categoryName);
         }
     }
