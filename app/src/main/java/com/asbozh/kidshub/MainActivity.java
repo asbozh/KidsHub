@@ -1,6 +1,7 @@
 package com.asbozh.kidshub;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Movie;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -91,12 +92,9 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
 
     @Override
     public void onClick(Categories selectedCategory) {
-        Toast.makeText(this, selectedCategory.getCategoryName(), Toast.LENGTH_SHORT).show();
-        //TODO start subcategory activity
-
-        //Intent intentToStartSubCategoryActivity = new Intent(this, DetailActivity.class);
-       // intentToStartSubCategoryActivity.putExtra("category", selectedCategory);
-       // startActivity(intentToStartSubCategoryActivity);
+        Intent intentToStartSubCategoryActivity = new Intent(this, CategoryActivity.class);
+        intentToStartSubCategoryActivity.putExtra("category", selectedCategory);
+        startActivity(intentToStartSubCategoryActivity);
     }
 
 
