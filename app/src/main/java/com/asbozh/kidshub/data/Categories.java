@@ -1,7 +1,10 @@
 package com.asbozh.kidshub.data;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.asbozh.kidshub.database.CategoriesContract;
 
 /**
  * Created by Nasko on 9/11/17.
@@ -15,6 +18,14 @@ public class Categories implements Parcelable {
     public Categories(int categoryId, String categoryName) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
+    }
+
+    public Categories(Cursor cursor) {
+        int categoryIdIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_CAT_ID);
+        int categoryNameIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_CAT_NAME);
+
+        this.categoryId = cursor.getInt(categoryIdIndex);
+        this.categoryName = cursor.getString(categoryNameIndex);
     }
 
 

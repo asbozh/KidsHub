@@ -1,7 +1,10 @@
 package com.asbozh.kidshub.data;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.asbozh.kidshub.database.CategoriesContract;
 
 /**
  * Created by Nasko on 9/11/17.
@@ -19,6 +22,18 @@ public class SubCategories implements Parcelable {
         this.subCategoryId = subCategoryId;
         this.subCategoryName = subCategoryName;
         this.coverURL = coverURL;
+    }
+
+    public SubCategories(Cursor cursor) {
+        int categoryIdIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_CAT_ID);
+        int subCategoryIdIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_SUBCAT_ID);
+        int subCategoryNameIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_SUBCAT_NAME);
+        int coverURLIndex = cursor.getColumnIndex(CategoriesContract.CategoriesEntry.COLUMN_COVER_URL);
+
+        this.categoryId = cursor.getInt(categoryIdIndex);
+        this.subCategoryId = cursor.getInt(subCategoryIdIndex);
+        this.subCategoryName = cursor.getString(subCategoryNameIndex);
+        this.coverURL = cursor.getString(coverURLIndex);
     }
 
     public int getCategoryId() {

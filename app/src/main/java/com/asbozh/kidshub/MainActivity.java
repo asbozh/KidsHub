@@ -2,6 +2,8 @@ package com.asbozh.kidshub;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Movie;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.asbozh.kidshub.data.Categories;
+import com.asbozh.kidshub.database.CategoriesContract;
+import com.asbozh.kidshub.database.SQLHandler;
 import com.asbozh.kidshub.utilities.JsonUtils;
 import com.asbozh.kidshub.utilities.NetworkUtils;
 
@@ -65,17 +69,18 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
 
     private void loadCategories() {
         showCategoriesView();
-        if (isOnline()) {
+        if (NetworkUtils.isOnline(this)) {
             getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, this);
         } else {
-            showErrorMessage();
+            SQLHandler sqlHandler = new SQLHandler(this);
+            sqlHandler.open();
+            if (sqlHandler.isCacheDataAvailable()) {
+                mCategoryAdapter.setCategoryData(sqlHandler.loadCacheCategories());
+            } else {
+                showErrorMessage();
+            }
+            sqlHandler.close();
         }
-    }
-
-    private boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnected();
     }
 
     private void showErrorMessage() {

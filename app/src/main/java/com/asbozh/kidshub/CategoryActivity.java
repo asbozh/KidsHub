@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.asbozh.kidshub.data.Categories;
 import com.asbozh.kidshub.data.SubCategories;
+import com.asbozh.kidshub.database.SQLHandler;
 import com.asbozh.kidshub.utilities.JsonUtils;
 import com.asbozh.kidshub.utilities.NetworkUtils;
 import java.util.List;
@@ -57,9 +58,20 @@ public class CategoryActivity extends AppCompatActivity implements SubCategoryAd
 
     private void loadSubCategories(int id) {
         showSubCategoriesView();
-        Bundle loaderBundle = new Bundle();
-        loaderBundle.putInt(CATEGORY_TAG, id);
-        getSupportLoaderManager().restartLoader(SUB_CATEGORY_LOADER_ID, loaderBundle, this);
+        if (NetworkUtils.isOnline(this)) {
+            Bundle loaderBundle = new Bundle();
+            loaderBundle.putInt(CATEGORY_TAG, id);
+            getSupportLoaderManager().restartLoader(SUB_CATEGORY_LOADER_ID, loaderBundle, this);
+        } else {
+            SQLHandler sqlHandler = new SQLHandler(this);
+            sqlHandler.open();
+            if (sqlHandler.isCacheDataAvailable()) {
+                mSubCategoryAdapter.setSubCategoryData(sqlHandler.loadCacheSubCategory(id));
+            } else {
+                showErrorMessageNoData();
+            }
+            sqlHandler.close();
+        }
     }
 
     private void showSubCategoriesView() {

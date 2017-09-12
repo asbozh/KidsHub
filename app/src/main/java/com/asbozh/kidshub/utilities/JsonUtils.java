@@ -17,7 +17,7 @@ import java.util.List;
 
 public class JsonUtils {
 
-    private static final String POSTER_BASE_URL = "https://tvc.mobiletv.bg/sxm/images/subcategory/";
+    public static final String POSTER_BASE_URL = "https://tvc.mobiletv.bg/sxm/images/subcategory/";
 
     public static List<Categories> getCategoriesListFromJson(String jsonResponse) throws JSONException {
 
