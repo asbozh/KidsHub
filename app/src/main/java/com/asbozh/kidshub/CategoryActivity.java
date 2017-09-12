@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,6 +32,8 @@ public class CategoryActivity extends AppCompatActivity implements SubCategoryAd
     private ProgressBar mProgressBarSub;
     private Categories mCategory;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +55,14 @@ public class CategoryActivity extends AppCompatActivity implements SubCategoryAd
             mSubCategoryAdapter = new SubCategoryAdapter(this, this);
             mRecyclerViewSubCategoryList.setAdapter(mSubCategoryAdapter);
 
+            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_sub_cat);
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadSubCategories(mCategory.getCategoryId());
+                }
+            });
+
             loadSubCategories(mCategory.getCategoryId());
         }
     }
@@ -59,10 +70,12 @@ public class CategoryActivity extends AppCompatActivity implements SubCategoryAd
     private void loadSubCategories(int id) {
         showSubCategoriesView();
         if (NetworkUtils.isOnline(this)) {
+            mSwipeRefreshLayout.setEnabled(true);
             Bundle loaderBundle = new Bundle();
             loaderBundle.putInt(CATEGORY_TAG, id);
             getSupportLoaderManager().restartLoader(SUB_CATEGORY_LOADER_ID, loaderBundle, this);
         } else {
+            mSwipeRefreshLayout.setEnabled(false);
             SQLHandler sqlHandler = new SQLHandler(this);
             sqlHandler.open();
             if (sqlHandler.isCacheDataAvailable()) {
@@ -141,8 +154,10 @@ public class CategoryActivity extends AppCompatActivity implements SubCategoryAd
         mProgressBarSub.setVisibility(View.INVISIBLE);
         if (data != null && data.size() > 0) {
             showSubCategoriesView();
+            mSwipeRefreshLayout.setRefreshing(false);
             mSubCategoryAdapter.setSubCategoryData(data);
         } else {
+            mSwipeRefreshLayout.setEnabled(false);
             showErrorMessageNoData();
         }
     }

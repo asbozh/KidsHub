@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +34,8 @@ public class SubCategoryActivity extends AppCompatActivity implements LoaderMana
     private TextView mTitleTextView;
     private SubCategories mSubCategory;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,14 @@ public class SubCategoryActivity extends AppCompatActivity implements LoaderMana
             mSubSubCategoryAdapter = new SubSubCategoryAdapter(this);
             mRecyclerViewSubSubCategoryList.setAdapter(mSubSubCategoryAdapter);
 
+            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_cat_sub_sub);
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadSubSubCategories(mSubCategory.getSubCategoryId());
+                }
+            });
+
             loadSubSubCategories(mSubCategory.getSubCategoryId());
         }
     }
@@ -62,10 +73,12 @@ public class SubCategoryActivity extends AppCompatActivity implements LoaderMana
     private void loadSubSubCategories(int id) {
         showSubSubCategoriesView();
         if (NetworkUtils.isOnline(this)) {
+            mSwipeRefreshLayout.setEnabled(true);
             Bundle loaderBundle = new Bundle();
             loaderBundle.putInt(SUB_CATEGORY_TAG, id);
             getSupportLoaderManager().restartLoader(SUB_SUB_CATEGORY_LOADER_ID, loaderBundle, this);
         } else {
+            mSwipeRefreshLayout.setEnabled(false);
             SQLHandler sqlHandler = new SQLHandler(this);
             sqlHandler.open();
             if (sqlHandler.isCacheDataAvailable()) {
@@ -133,8 +146,10 @@ public class SubCategoryActivity extends AppCompatActivity implements LoaderMana
     public void onLoadFinished(Loader<List<SubSubCategories>> loader, List<SubSubCategories> data) {
         if (data != null && data.size() > 0) {
             showSubSubCategoriesView();
+            mSwipeRefreshLayout.setRefreshing(false);
             mSubSubCategoryAdapter.setSubSubCategoryData(data);
         } else {
+            mSwipeRefreshLayout.setEnabled(false);
             hideSubSubCategoriesView();
         }
     }

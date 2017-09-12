@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
     private TextView mErrorMessageTextView;
     private ProgressBar mProgressBar;
     private ImageButton mRetryImageButton;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,14 +66,24 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
         mCategoryAdapter = new CategoryAdapter(this, this);
         mRecyclerViewCategoryList.setAdapter(mCategoryAdapter);
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_cat);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadCategories();
+            }
+        });
+
         loadCategories();
     }
 
     private void loadCategories() {
         showCategoriesView();
         if (NetworkUtils.isOnline(this)) {
+            mSwipeRefreshLayout.setEnabled(true);
             getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, this);
         } else {
+            mSwipeRefreshLayout.setEnabled(false);
             SQLHandler sqlHandler = new SQLHandler(this);
             sqlHandler.open();
             if (sqlHandler.isCacheDataAvailable()) {
@@ -145,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
         mProgressBar.setVisibility(View.INVISIBLE);
         if (data != null) {
             showCategoriesView();
+            mSwipeRefreshLayout.setRefreshing(false);
             mCategoryAdapter.setCategoryData(data);
         }
     }
