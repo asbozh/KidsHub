@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.asbozh.kidshub.data.Categories;
 import com.asbozh.kidshub.data.SubCategories;
@@ -75,8 +74,10 @@ public class CategoryActivity extends AppCompatActivity implements SubCategoryAd
 
     @Override
     public void onClick(SubCategories selectedSubCategory) {
-        //TODO
-        Toast.makeText(this, selectedSubCategory.getSubCategoryName(), Toast.LENGTH_SHORT).show();
+        Intent intentToStartSubCategoryActivity = new Intent(this, SubCategoryActivity.class);
+        intentToStartSubCategoryActivity.putExtra("sub_category", selectedSubCategory);
+        intentToStartSubCategoryActivity.putExtra("activity_title", this.getTitle());
+        startActivity(intentToStartSubCategoryActivity);
     }
 
     @Override

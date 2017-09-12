@@ -92,9 +92,9 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
 
     @Override
     public void onClick(Categories selectedCategory) {
-        Intent intentToStartSubCategoryActivity = new Intent(this, CategoryActivity.class);
-        intentToStartSubCategoryActivity.putExtra("category", selectedCategory);
-        startActivity(intentToStartSubCategoryActivity);
+        Intent intentToStartCategoryActivity = new Intent(this, CategoryActivity.class);
+        intentToStartCategoryActivity.putExtra("category", selectedCategory);
+        startActivity(intentToStartCategoryActivity);
     }
 
 

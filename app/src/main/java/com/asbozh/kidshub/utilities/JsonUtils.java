@@ -2,6 +2,7 @@ package com.asbozh.kidshub.utilities;
 
 import com.asbozh.kidshub.data.Categories;
 import com.asbozh.kidshub.data.SubCategories;
+import com.asbozh.kidshub.data.SubSubCategories;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,6 +79,45 @@ public class JsonUtils {
             }
         }
         return parsedSubCategoriesList;
+
+    }
+
+    public static List<SubSubCategories> getSubSubCategoriesFromJsonById(String jsonResponse, int id) throws JSONException {
+
+        final String SUB_CATEGORY_LIST = "subcategories";
+        final String SUB_CATEGORY_ID = "subcategory_id";
+        final String SUB_SUBCATEGORY_ID = "sub_subcategory_id";
+        final String SUB_SUBCATEGORY_NAME = "sub_subcategory_name";
+
+        List<SubSubCategories> parsedSubSubCategoriesList = new ArrayList<>();
+
+        JSONObject subCategoryJson = new JSONObject(jsonResponse);
+
+        JSONArray subCategoryListArray = subCategoryJson.getJSONArray(SUB_CATEGORY_LIST);
+
+
+        for (int i = 0; i < subCategoryListArray.length(); i++) {
+
+            JSONArray subSubCategoryListArray = subCategoryListArray.getJSONObject(i).getJSONArray(SUB_CATEGORY_LIST);
+
+            for (int j = 0; j < subSubCategoryListArray.length(); j++) {
+                int subCategoryId;
+                int subSubCategoryId;
+                String subSubCategoryName;
+
+                JSONObject subSubCategory = subSubCategoryListArray.getJSONObject(j);
+
+                subCategoryId = subSubCategory.getInt(SUB_CATEGORY_ID);
+                if (subCategoryId == id) {
+                    subSubCategoryId = subSubCategory.getInt(SUB_SUBCATEGORY_ID);
+                    subSubCategoryName = subSubCategory.getString(SUB_SUBCATEGORY_NAME);
+
+                    SubSubCategories subSubCategoryToAdd = new SubSubCategories(subCategoryId, subSubCategoryId, subSubCategoryName);
+                    parsedSubSubCategoriesList.add(subSubCategoryToAdd);
+                }
+            }
+        }
+        return parsedSubSubCategoriesList;
 
     }
 }
