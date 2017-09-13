@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">Kids Hub</string>
+    <string name="app_name">Детски кът</string>
     <string name="retry_desc">Опитайте да се свържете отново</string>
     <string name="error_message">Няма връзка с интернет.\nМоля свържете се и опитайте отново.</string>
+    <string name="error_message_snackbar">Няма връзка с интернет. Офлайн режим.</string>
     <string name="error_message_no_data">Празно</string>
 </resources>

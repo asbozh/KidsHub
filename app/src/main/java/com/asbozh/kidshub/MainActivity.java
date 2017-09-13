@@ -1,30 +1,25 @@
 package com.asbozh.kidshub;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Movie;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.asbozh.kidshub.data.Categories;
-import com.asbozh.kidshub.database.CategoriesContract;
 import com.asbozh.kidshub.database.SQLHandler;
 import com.asbozh.kidshub.utilities.JsonUtils;
 import com.asbozh.kidshub.utilities.NetworkUtils;
@@ -47,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setCustomTitle();
 
         // find views
         mErrorMessageTextView = (TextView) findViewById(R.id.tv_error_message);
@@ -77,16 +74,32 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
         loadCategories();
     }
 
+    private void setCustomTitle() {
+        TextView tv = new TextView(getApplicationContext());
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        tv.setLayoutParams(lp);
+        tv.setText(getString(R.string.app_name));
+        tv.setTextSize(25);
+        tv.setTextColor(Color.parseColor("#FFFFFF"));
+        Typeface tf = Typeface.createFromAsset(getAssets(), "Nautilus.otf");
+        tv.setTypeface(tf);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(tv);
+    }
+
     private void loadCategories() {
         showCategoriesView();
         if (NetworkUtils.isOnline(this)) {
-            mSwipeRefreshLayout.setEnabled(true);
             getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, this);
         } else {
-            mSwipeRefreshLayout.setEnabled(false);
+            mSwipeRefreshLayout.setRefreshing(false);
             SQLHandler sqlHandler = new SQLHandler(this);
             sqlHandler.open();
             if (sqlHandler.isCacheDataAvailable()) {
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(R.id.content), getString(R.string.error_message_snackbar), Snackbar.LENGTH_SHORT);
+
+                snackbar.show();
                 mCategoryAdapter.setCategoryData(sqlHandler.loadCacheCategories());
             } else {
                 showErrorMessage();
@@ -105,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.C
         mErrorMessageTextView.setVisibility(View.INVISIBLE);
         mRetryImageButton.setVisibility(View.INVISIBLE);
         mRecyclerViewCategoryList.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
